@@ -1,0 +1,129 @@
+@startuml
+
+class User{
+ -userId: long
+ -userName: String
+ -email: String
+ -passHash: String
+ -userData: Data
+}
+
+class VocabTerm{
+ -vocabId: long
+ -term: String
+ -definition: String
+ -srcNoteId: long
+ -relatedTopicId: long
+}
+
+class Note{
+ -noteId: long
+ -vocabList: VocabTerm[]
+ -topicExtracted: Topic[]
+ -processed: boolean
+ -uploadDate: dateTime
+ -fileName: String
+ -fileSource: String
+}
+
+class Quiz{
+ -quizId: long
+ -title: String
+ -dateCreated: dateTime
+ -topicsCovered: Topic[]
+ -score: float
+}
+
+class QuizQuestion{
+ -questionId: long
+ -Quiz: quiz
+ -questionText: String
+ -options: String[]
+ -selectedAnswer: int
+ -correctAnswer: int
+ -studyable: Studyable
+}
+
+class Report{
+ -reportId: long
+ -userID: long
+ -quizId: long
+ -dateGen: DateTime
+ -totalQuestions: float
+ -correctCount:int
+ -weakTopics: Studyable[]
+ -strongTopics: Studyable[]
+}
+
+class Topic{
+ -topicId: String
+ -name: String
+ -importanceScore: int
+ -relatedNote: noteId
+}
+
+class StudyGuide{
+ -studyGuideId: long
+ -userId: long
+ -sourceReportId: long
+ -dateCreated: long
+ -content: String
+}
+
+class FocusSession{
+ -sessionId: long
+ -userId: long
+ -mode: SessionType
+ -startTime: DateTime
+ -endTime: DateTime
+ -spotifyUrl: String
+ -status:SessionStatus
+}
+
+enum SessionStatus<<enum>>{
+ -Ongoing
+ -Paused
+ -Completed
+}
+
+enum SessionType<<enum>>{
+ -Pomodoro
+ -Unlimited
+}
+
+class Data{
+ -notes: Note[]
+ -vocabs: VocabTerms[]
+ -topics: Topic[]
+ -quizzes: Quiz[]
+ -reports: Report[]
+ -studyGuides: StudyGuide[]
+}
+
+class Studyable<<abstract>>{
+}
+
+Studyable --|> Topic
+Studyable --|> VocabTerm
+
+User -- Data
+
+Data -- Note
+Data -- VocabTerm
+Data -- Topic
+Data -- StudyGuide
+Data -- Report
+Data -- Quiz
+
+Report - Quiz
+
+Quiz -- QuizQuestion
+Quiz - Topic
+
+Note - Topic
+Note - VocabTerm
+
+FocusSession -- SessionStatus
+FocusSession -- SessionType
+
+@enduml
