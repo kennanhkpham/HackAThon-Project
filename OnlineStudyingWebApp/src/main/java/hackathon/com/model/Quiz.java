@@ -7,6 +7,7 @@ import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Entity
 @Data
@@ -23,8 +24,17 @@ public class Quiz {
 
     private double score;
 
-    @OneToOne
+    @ManyToOne
     private User user;
+
+    @OneToOne
+    private Note note;
+
+    @OneToMany
+    private List<QuizQuestion> quizQuestions;
+
+    @OneToMany
+    private List<Topic> topics;
 
 
 }
