@@ -7,6 +7,7 @@ import Login from './components/Login'
 function App() {
   const [showSignup, setShowSignup] = useState(false)
   const [showLogin, setShowLogin] = useState(false)
+  const [showHero, setShowHero] = useState(true)
   const [currentUser, setCurrentUser] = useState(() => {
     try {
       const raw = localStorage.getItem('current_user')
@@ -15,6 +16,16 @@ function App() {
       return null
     }
   })
+
+  const signOut = () => {
+    try {
+      localStorage.removeItem('current_user')
+    } catch (e) {}
+    setCurrentUser(null)
+    setShowLogin(false)
+    setShowSignup(false)
+    setShowHero(true)
+  }
 
   return (
     <div className="app-root">
@@ -26,8 +37,17 @@ function App() {
           <p className="subtitle">{showSignup ? 'Create an account to get started' : 'Welcome to our Online Studying Website'}</p>
 
           <div className="title-actions">
-            <button className="nav-button" onClick={() => { setShowSignup(false); setShowLogin(false) }}>Home</button>
-            <button className="nav-button" onClick={() => { setShowLogin(true); setShowSignup(false) }}>Log In</button>
+            {!currentUser && (
+              <button className="nav-button" onClick={() => { setShowSignup(false); setShowLogin(false); setShowHero(true) }}>Home</button>
+            )}
+            {!currentUser ? (
+              <button className="nav-button" onClick={() => { setShowLogin(true); setShowSignup(false); setShowHero(false) }}>Log In</button>
+            ) : (
+              <div style={{ display: 'inline-flex', gap: 8, alignItems: 'center' }}>
+                <span className="user-badge">{currentUser.username}</span>
+                <button className="nav-button" onClick={signOut}>Sign out</button>
+              </div>
+            )}
           </div>
         </div>
 
@@ -37,7 +57,10 @@ function App() {
       </header>
 
       <section className="card">
-        {showLogin ? (
+        {currentUser ? (
+          // If a user is signed in, show only Notes — no sign up sheet or prompt
+          <Notes />
+        ) : showLogin ? (
           <Login onLogin={(user) => { setCurrentUser(user); setShowLogin(false); setShowSignup(false) }} onShowSignUp={() => { setShowSignup(true); setShowLogin(false) }} />
         ) : showSignup ? (
           <SignUp onSignUp={(user) => { setCurrentUser(user); setShowSignup(false) }} onHome={() => setShowSignup(false)} />
@@ -49,7 +72,7 @@ function App() {
                skills—sign up today and start your journey toward smarter studying!”</p>
             <button className="study-submit" onClick={() => setShowSignup(true)}>Get started</button>
             <div style={{ marginTop: 16 }}>
-              {currentUser ? <Notes /> : <p className="empty">Create an account to see your saved notes.</p>}
+              {/* No prompt here unless you want one */}
             </div>
           </div>
         )}

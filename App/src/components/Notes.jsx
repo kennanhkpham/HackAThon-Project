@@ -12,7 +12,7 @@ function loadNotes() {
   }
 }
 
-export default function Notes() {
+export default function Notes({ onLogout }) {
   const [notes, setNotes] = React.useState(() => loadNotes())
   const [savedAt, setSavedAt] = React.useState(() => localStorage.getItem(STORAGE_KEY + ':ts'))
 
@@ -79,14 +79,9 @@ export default function Notes() {
 
   return (
     <div className="notes">
-      <div className="notes-header">
-        <h3>Your saved notes</h3>
-        <div className="notes-meta">{notes.length ? `${notes.length} notes` : 'No saved notes'}</div>
-      </div>
-
-      <div style={{ display: 'flex', gap: 8, margin: '8px 0' }}>
+      <div className="notes-actions">
         <button className="study-submit" onClick={addSampleNote}>Add sample note</button>
-        <label className="clear-btn" style={{ display: 'inline-flex', alignItems: 'center', gap: 8, cursor: 'pointer' }}>
+        <label className="clear-btn import-label">
           <input
             type="file"
             accept=".txt,.json"
@@ -100,6 +95,14 @@ export default function Notes() {
           Import notes
         </label>
         <button className="clear-btn" onClick={clearNotes}>Clear all</button>
+        {typeof onLogout === 'function' && (
+          <button className="clear-btn" onClick={onLogout}>Log Out</button>
+        )}
+      </div>
+
+      <div className="notes-header">
+        <h3>Your saved notes</h3>
+        <div className="notes-meta">{notes.length ? `${notes.length} notes` : 'No saved notes'}</div>
       </div>
 
       <ul className="notes-list">

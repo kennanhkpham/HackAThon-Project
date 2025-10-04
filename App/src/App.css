@@ -56,6 +56,8 @@
 .title-actions { display:flex; gap:0.5rem; justify-content:center; margin-top:0.75rem }
 .title-actions .nav-button { background:#fff }
 
+.user-badge { background:#eef2ff; padding:0.25rem 0.5rem; border-radius:6px; color:#222 }
+
 /* centered header (home) */
 .app-header.centered { justify-content:center; text-align:center }
 .app-header.centered .header-actions { display:none }
@@ -151,3 +153,6 @@ header h1 {
 }
 
 /* keep default button behavior for other buttons */
+
+.notes-actions { display:flex; gap:12px; justify-content:space-between; align-items:center; width:100%; max-width:720px }
+.import-label { display:inline-flex; align-items:center; gap:8px; cursor:pointer }
