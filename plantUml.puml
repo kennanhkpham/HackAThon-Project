@@ -32,6 +32,7 @@ class Quiz{
  -dateCreated: dateTime
  -topicsCovered: Topic[]
  -score: float
+ -questions: QuizQuestion[]
 }
 
 class QuizQuestion{
