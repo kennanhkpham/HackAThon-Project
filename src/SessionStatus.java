@@ -1,0 +1,1 @@
+public enum SessionStatus{Ongoing, Paused, Completed;}
