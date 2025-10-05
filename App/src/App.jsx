@@ -52,9 +52,6 @@ function App() {
           </div>
         </div>
 
-        <div className="header-actions">
-          {/* intentionally empty */}
-        </div>
       </header>
 
       <section className="card">
