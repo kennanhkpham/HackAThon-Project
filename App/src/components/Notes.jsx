@@ -31,95 +31,94 @@ export default function Notes({ onLogout }) {
     }
   }
 
-  const addSampleNote = () => {
-    const sample = {
+  const handleGenerated = (text, title) => {
+    const newNote = {
       id: Date.now() + Math.random(),
-      title: 'Note',
-      text: `Note — created ${new Date().toLocaleString()}`,
+      title: title || 'New Note from AI',
+      text: text,
       ts: new Date().toISOString(),
     }
-    const next = [sample, ...notes]
-    setNotes(next)
-    persist(next)
-  }
-
-  const handleGenerated = (text, title) => {
-    const note = { id: Date.now() + Math.random(), title: title || ((String(text || '')).split('\n')[0].slice(0, 60) || 'Untitled'), text, ts: new Date().toISOString() }
-    const next = [note, ...notes]
+    const next = [newNote, ...notes]
     setNotes(next)
     persist(next)
     setShowDrop(false)
   }
 
   const deleteNote = (id) => {
-    const next = notes.filter((n) => n.id !== id)
+    const next = notes.filter(n => n.id !== id)
     setNotes(next)
     persist(next)
+    setExpandedIds(prev => prev.filter(eId => eId !== id)) // Also collapse if deleted
   }
 
-  const toggleExpanded = (id) => {
-    setExpandedIds((prev) => {
-      if (prev.includes(id)) return prev.filter((x) => x !== id)
-      return [...prev, id]
+  // *** NEW FUNCTION: TOGGLES EXPANSION ***
+  const toggleExpansion = (id) => {
+    setExpandedIds(prev => {
+      if (prev.includes(id)) {
+        return prev.filter(eId => eId !== id) // Collapse
+      } else {
+        return [...prev, id] // Expand
+      }
     })
   }
-
-  const clearNotes = () => {
-    setNotes([])
-    try {
-      localStorage.removeItem(STORAGE_KEY)
-      localStorage.removeItem(STORAGE_KEY + ':ts')
-      setSavedAt(null)
-    } catch (e) {}
-  }
-
-  const importFromFile = (file) => {
-    if (!file) return
-    const reader = new FileReader()
-    reader.onload = (ev) => {
-      const text = String(ev.target.result || '')
-      // try parse JSON array, otherwise split by newlines
-      let imported = []
-      try {
-        const parsed = JSON.parse(text)
-        if (Array.isArray(parsed)) {
-          imported = parsed.map((t) => {
-            const body = typeof t === 'string' ? t : JSON.stringify(t)
-            return { id: Date.now() + Math.random(), title: (String(body).split('\n')[0] || 'Imported'), text: body, ts: new Date().toISOString() }
-          })
-        }
-      } catch (e) {
-        // treat as newline-separated text
-        imported = text.split(/\r?\n/).filter(Boolean).map((t) => ({ id: Date.now() + Math.random(), title: (String(t).slice(0, 60) || 'Imported'), text: t, ts: new Date().toISOString() }))
-      }
-
-      const next = [...imported, ...notes]
-      setNotes(next)
-      persist(next)
-    }
-    reader.readAsText(file)
-  }
+  // ****************************************
 
   return (
-    <div className="notes">
-      <div className="notes-actions">
-        <button className="study-submit" onClick={() => setShowDrop(true)}>Generate a Note</button>
-        <label className="clear-btn import-label">
-          <input
-            type="file"
-            accept=".txt,.json"
-            style={{ display: 'none' }}
-            onChange={(e) => {
-              const f = e.target.files && e.target.files[0]
-              if (f) importFromFile(f)
-              e.target.value = ''
-            }}
-          />
-          Import notes
-        </label>
-        <button className="clear-btn" onClick={clearNotes}>Clear all</button>
+    <div className="notes-container">
+      <style>{`
+        .notes-container { padding: 10px; }
+        .notes-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
+        .notes-list { list-style: none; padding: 0; }
+        .note-item { 
+          border: 1px solid #ddd; 
+          border-radius: 8px; 
+          margin-bottom: 10px; 
+          background: #fff; 
+          display: flex; 
+          justify-content: space-between; 
+          align-items: flex-start; 
+          padding: 15px;
+        }
+        .note-body { 
+          flex-grow: 1; 
+          cursor: pointer; /* Indicate it's clickable */
+        }
+        .note-title { 
+          font-weight: bold; 
+          font-size: 1.1em; 
+          margin-bottom: 5px; 
+        }
+        .note-text { 
+          white-space: pre-wrap; 
+          max-height: 200px; /* Limit height when expanded for long text */
+          overflow: auto;
+          margin-top: 10px;
+          color: #333;
+        }
+        .note-ts { 
+          font-size: 0.75em; 
+          color: #999; 
+          margin-top: 8px; 
+        }
+        .note-empty { 
+          text-align: center; 
+          color: #666; 
+          padding: 20px; 
+          border: 1px dashed #ccc; 
+          border-radius: 6px; 
+        }
+        .action-area { 
+          display: flex; 
+          flex-direction: column; 
+          gap: 8px; 
+          margin-left: 20px;
+        }
+      `}</style>
+      
+      <div className="notes-action-bar" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+        <button onClick={() => setShowDrop(prev => !prev)}>{showDrop ? 'Hide Importer' : 'Import File & Generate Note'}</button>
         {typeof onLogout === 'function' && (
-          <button className="clear-btn" onClick={onLogout}>Log Out</button>
+          <button className="nav-btn" onClick={onLogout}>Log Out</button>
         )}
       </div>
 
@@ -140,24 +139,34 @@ export default function Notes({ onLogout }) {
           const expanded = expandedIds.includes(n.id)
           return (
             <li key={n.id} className="note-item">
-              <div className="note-body">
+              {/* *** MODIFICATION: ADDED onClick HANDLER *** */}
+              <div className="note-body" onClick={() => toggleExpansion(n.id)}> 
                 {n.title && <div className="note-title">{n.title}</div>}
                 {expanded ? (
                   <>
                     <div className="note-text">{n.text}</div>
-                    <div className="note-ts">{new Date(n.ts).toLocaleString()}</div>
+                    <div className="note-ts">Saved: {new Date(n.ts).toLocaleString()}</div>
                   </>
                 ) : (
-                  <div style={{ color: '#666', fontStyle: 'italic' }}></div>
+                  <div style={{ color: '#666', fontStyle: 'italic', fontSize: '0.9em' }}>
+                    Click to view full content ({n.text.length} characters)
+                  </div>
                 )}
               </div>
-              <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+              {/* *** END MODIFICATION *** */}
+              
+              <div className="action-area">
                 <button className="remove-btn" onClick={() => deleteNote(n.id)}>Delete</button>
+                {/* Optional: Add a separate button to toggle expansion if you want */}
+                <button onClick={() => toggleExpansion(n.id)}>
+                    {expanded ? 'Collapse' : 'Expand'}
+                </button>
               </div>
             </li>
           )
         })}
       </ul>
+      <p style={{ fontSize: '0.8em', color: '#999', marginTop: 20 }}>Last saved: {savedAt ? new Date(savedAt).toLocaleString() : 'Never'}</p>
     </div>
   )
 }
