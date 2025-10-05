@@ -16,7 +16,9 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/v1/note")
@@ -24,17 +26,17 @@ public class NoteController {
 
     @PostMapping("/upload")
     public ResponseEntity<?> uploadPdf(@RequestParam("file") MultipartFile file) {
-        if (file.isEmpty()) {
-            return ResponseEntity.badRequest().body("File is empty!");
-        }
+            if (file.isEmpty()) {
+                return ResponseEntity.badRequest().body("File is empty!");
+            }
 
-        String filename = file.getOriginalFilename();
-        long size = file.getSize();
+            String filename = file.getOriginalFilename();
+            long size = file.getSize();
 
-        PdfAiAnalyzer analyzer = new PdfAiAnalyzer();
-        String summary = analyzer.summarize(file);
+            PdfAiAnalyzer analyzer = new PdfAiAnalyzer();
+            String summary = "Summary: " + analyzer.summarize(file);
 
-        return ResponseEntity.ok("Summary: " + summary);
+            return ResponseEntity.ok(Map.of("summary", summary));
     }
     @PostMapping("/makeCardsandTopics")
     public ResponseEntity<?> makeCardsandTopics(@RequestParam("file") MultipartFile file) {

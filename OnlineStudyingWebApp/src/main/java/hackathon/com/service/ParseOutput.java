@@ -1,13 +1,12 @@
 package hackathon.com.service;
 import java.util.List;
-import java.util.ArrayList;
 import com.google.gson.*;
 import hackathon.com.model.FlashCard;
 import hackathon.com.model.Topic;
 
 public class ParseOutput {
     public static void parseOutput(String input, List<Topic> topics, List<FlashCard> vocabs) {
-        Gson gson = new Gson();
+        /*Gson gson = new Gson();
         JsonObject jsonObject = JsonParser.parseString(jsonInput).getAsJsonObject();
 
         if (jsonObject.has("topics")) {
@@ -32,9 +31,7 @@ public class ParseOutput {
                     }
 
                 }
-
-
             }
-        }
+        }*/
     }
 }
