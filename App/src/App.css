@@ -185,3 +185,10 @@ h2{
 
 .notes-actions { display:flex; gap:12px; justify-content:space-between; align-items:center; width:100%; max-width:1100px }
 .import-label { display:inline-flex; align-items:center; gap:8px; cursor:pointer }
+
+/* Override: force all text to black across the app. This takes precedence over theme variables. */
+*, *::before, *::after { color: #000 !important; }
+::placeholder { color: #000 !important; opacity: 1 !important; }
+
+/* Also ensure SVG fills inherit black where possible */
+svg { fill: #000 !important; color: #000 !important; }
