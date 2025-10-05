@@ -4,6 +4,7 @@ import SignUp from './components/SignUp'
 import Notes from './components/Notes'
 import Login from './components/Login'
 import axios from 'axios'
+import {useNavigate} from "react-router-dom";
 
 function App() {
   const [showSignup, setShowSignup] = useState(false)
@@ -14,7 +15,7 @@ function App() {
       const raw = localStorage.getItem('current_user')
       return raw ? JSON.parse(raw) : null
     } catch (e) {
-      return null
+      return e;
     }
   })
 
@@ -27,6 +28,7 @@ function App() {
     setShowSignup(false)
     setShowHero(true)
   }
+  const navigate = useNavigate();
 
   return (
     <div className="app-root">
@@ -68,7 +70,7 @@ function App() {
                you can learn anytime, anywhere, and connect with tools that make studying easier 
                and more effective. Join thousands of learners who are already improving their 
                skills—sign up today and start your journey toward smarter studying!”</p>
-            <button className="study-submit" onClick={() => setShowSignup(true)}>Get started</button>
+            <button className="study-submit" onClick={() => navigate("/signup")}>Get started</button>
             <div style={{ marginTop: 16 }}>
               {/* No prompt here unless you want one */}
             </div>

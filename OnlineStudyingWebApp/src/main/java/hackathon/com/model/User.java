@@ -41,10 +41,11 @@ public class User implements UserDetails {
     private List<Report> reports;
 
     @OneToOne(cascade = CascadeType.ALL)
-    @JoinColumn(nullable = false, unique = true)
+    @JoinColumn
     private StudyGuide studyGuide;
 
     public User(String username, String email, String password, LocalDateTime createdAt) {
+        this.username = username;
         this.email = email;
         this.password = password;
         this.createdAt = createdAt;

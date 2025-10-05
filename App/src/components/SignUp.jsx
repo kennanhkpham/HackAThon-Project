@@ -1,133 +1,144 @@
-import React from 'react'
-import axios from 'axios'
+import React from 'react';
+import * as Yup from "yup";
+import { signUp } from "../services/client.js";
+import { useNavigate, Link } from "react-router-dom";
+import { Formik, Form, useField } from "formik";
+import { useAuth } from "./auth/AuthContext.jsx";
 
-function validateEmail(email) {
-  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)
-}
+// Custom input component
+const MyTextInput = ({ label, ...props }) => {
+    const [field, meta] = useField(props);
 
-export default function SignUp({ onSignUp, onHome }) {
-  const [email, setEmail] = React.useState('')
-  const [username, setUsername] = React.useState('')
-  const [password, setPassword] = React.useState('')
-  const [confirm, setConfirm] = React.useState('')
-  const [errors, setErrors] = React.useState({})
-  const [success, setSuccess] = React.useState(null)
-
-  const reset = () => {
-    setEmail('')
-    setUsername('')
-    setPassword('')
-    setConfirm('')
-    setErrors({})
-  }
-
-  const handleSubmit = (e) => {
-    e.preventDefault()
-    const nextErrors = {}
-    if (!email) nextErrors.email = 'Email is required'
-    else if (!validateEmail(email)) nextErrors.email = 'Email is invalid'
-
-    if (!username) nextErrors.username = 'Username is required'
-    else if (username.length < 3) nextErrors.username = 'Use 3+ characters'
-
-    if (!password) nextErrors.password = 'Password is required'
-    else if (password.length < 6) nextErrors.password = 'Password must be 6+ characters'
-
-    if (password !== confirm) nextErrors.confirm = "Passwords don't match"
-
-    setErrors(nextErrors)
-
-    if (Object.keys(nextErrors).length === 0) {
-      // Demo: persist to localStorage (not secure) and show success message
-      try {
-        const users = JSON.parse(localStorage.getItem('demo_users') || '[]')
-        users.push({ email, username, createdAt: new Date().toISOString() })
-        localStorage.setItem('demo_users', JSON.stringify(users))
-        // set current user so the app can show user-specific content
-        const current = { email, username }
-        localStorage.setItem('current_user', JSON.stringify(current))
-        if (typeof onSignUp === 'function') onSignUp(current)
-      } catch (err) {
-        // ignore storage errors
-      }
-
-      setSuccess({ email, username })
-      reset()
-    }
-  }
-
-  return (
-    <div className="signup">
-      <form onSubmit={handleSubmit} className="signup-form" noValidate>
-        <div className="field">
-          <label htmlFor="email">Email</label>
-          <input
-            id="email"
-            type="email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            placeholder="you@example.com"
-            required
-          />
-          {errors.email && <div className="field-error">{errors.email}</div>}
+    return (
+        <div style={{ marginBottom: '1rem' }}>
+            <label htmlFor={props.id || props.name} style={{ display: 'block', fontWeight: 'bold', marginBottom: '0.25rem' }}>
+                {label}
+            </label>
+            <input
+                {...field}
+                {...props}
+                style={{
+                    width: '100%',
+                    padding: '0.5rem',
+                    borderRadius: '4px',
+                    border: '1px solid #ccc'
+                }}
+            />
+            {meta.touched && meta.error ? (
+                <div style={{ color: 'red', marginTop: '0.25rem' }}>{meta.error}</div>
+            ) : null}
         </div>
+    );
+};
 
-        <div className="field">
-          <label htmlFor="username">Username</label>
-          <input
-            id="username"
-            value={username}
-            onChange={(e) => setUsername(e.target.value)}
-            placeholder="pick a username"
-            required
-          />
-          {errors.username && <div className="field-error">{errors.username}</div>}
-        </div>
+const SignUpForm = ({ onSuccess }) => {
+    return (
+        <Formik
+            validateOnMount={true}
+            validationSchema={Yup.object({
+                username: Yup.string().required("Username is required"),
+                email: Yup.string().email('Invalid email').required('Email is required'),
+                password: Yup.string().max(20, 'Must be 20 characters or less').required('Password is required'),
+            })}
+            initialValues={{ username: '', email: '', password: '' }}
+            onSubmit={(values, { setSubmitting }) => {
+                setSubmitting(true);
 
-        <div className="field">
-          <label htmlFor="password">Create password</label>
-          <input
-            id="password"
-            type="password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            placeholder="••••••••"
-            required
-          />
-          {errors.password && <div className="field-error">{errors.password}</div>}
-        </div>
+                const user = {
+                    username: values.username,
+                    email: values.email,
+                    password: values.password
+                };
 
-        <div className="field">
-          <label htmlFor="confirm">Confirm password</label>
-          <input
-            id="confirm"
-            type="password"
-            value={confirm}
-            onChange={(e) => setConfirm(e.target.value)}
-            placeholder="repeat your password"
-            required
-          />
-          {errors.confirm && <div className="field-error">{errors.confirm}</div>}
-        </div>
+                signUp(user)
+                    .then(res => {
+                        onSuccess(res.headers["authorization"]);
+                    })
+                    .catch(err => {
+                        console.error(err);
+                    })
+                    .finally(() => setSubmitting(false));
+            }}
+        >
+            {({ isValid, isSubmitting }) => (
+                <Form>
+                    <MyTextInput
+                        label="Username"
+                        name="username"
+                        type="username"
+                        placeholder="username is required"
+                    />
+                    <MyTextInput
+                        label="Email"
+                        name="email"
+                        type="email"
+                        placeholder="abc@gmail.com"
+                    />
+                    <MyTextInput
+                        label="Password"
+                        name="password"
+                        type="password"
+                        placeholder="Enter password"
+                    />
 
-        <div style={{ display: 'flex', gap: 8, marginTop: 8 }}>
-          <button type="submit" className="study-submit">Create account</button>
-          <button
-            type="button"
-            className="clear-btn"
-            onClick={() => { reset(); setSuccess(null) }}
-          >
-            Reset
-          </button>
-        </div>
-      </form>
+                    <div style={{ marginBottom: '1rem', textAlign: 'center' }}>
+                        Already a user? <Link to="/">Login</Link>
+                    </div>
 
-      {success && (
-        <div className="signup-success" role="status">
-          <strong>Account created</strong>
-          <p>{success.username} — {success.email}</p>
+                    <button
+                        type="submit"
+                        disabled={!isValid || isSubmitting}
+                        style={{
+                            width: '100%',
+                            padding: '0.75rem',
+                            backgroundColor: '#007bff',
+                            color: 'white',
+                            border: 'none',
+                            borderRadius: '4px',
+                            cursor: 'pointer'
+                        }}
+                    >
+                        {isSubmitting ? 'Submitting...' : 'Sign Up'}
+                    </button>
+                </Form>
+            )}
+        </Formik>
+    );
+};
+
+const RegisterUserForm = () => {
+    const { setUserFromToken } = useAuth();
+    const navigate = useNavigate();
+
+    return (
+        <div style={{
+            minHeight: '100vh',
+            display: 'flex',
+            justifyContent: 'center',
+            alignItems: 'center',
+            backgroundColor: '#f5f5f5'
+        }}>
+            <div style={{
+                width: '100%',
+                maxWidth: '400px',
+                backgroundColor: 'white',
+                padding: '2rem',
+                borderRadius: '8px',
+                boxShadow: '0 4px 6px rgba(0,0,0,0.1)'
+            }}>
+                <h1 style={{ textAlign: 'center', marginBottom: '1rem' }}>Sign Up</h1>
+                <p style={{ textAlign: 'center', marginBottom: '2rem', color: '#555' }}>
+                    To enjoy all of our cool features ✌️
+                </p>
+
+                <SignUpForm onSuccess={(token) => {
+                    localStorage.setItem("access_token", token);
+                    setUserFromToken();
+                    navigate("/dashboard");
+                }} />
+            </div>
         </div>
-      )}
-    </div>
-  )
-}
+    );
+};
+
+export default RegisterUserForm;
