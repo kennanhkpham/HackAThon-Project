@@ -1,83 +1,135 @@
-import React, { useState } from 'react'
-import './App.css'
-import SignUp from './components/SignUp'
-import Notes from './components/Notes'
-import Login from './components/Login'
-import {useNavigate} from "react-router-dom";
+import React, { useState, useEffect } from 'react';
+import './App.css';
+import SignUp from './components/SignUp';
+import Notes from './components/Notes';
+import Login from './components/Login';
 
 function App() {
-  const [showSignup, setShowSignup] = useState(false)
-  const [showLogin, setShowLogin] = useState(false)
-  const [showHero, setShowHero] = useState(true)
-  const [currentUser, setCurrentUser] = useState(() => {
+  const [view, setView] = useState('home'); // 'home' | 'login' | 'signup' | 'notes'
+  const [currentUser, setCurrentUser] = useState(null);
+
+  // Load user safely from localStorage
+  useEffect(() => {
     try {
-      const raw = localStorage.getItem('current_user')
-      return raw ? JSON.parse(raw) : null
-    } catch (e) {
-      return e;
+      const savedUser = localStorage.getItem('current_user');
+      if (savedUser) {
+        const parsed = JSON.parse(savedUser);
+        if (parsed && typeof parsed === 'object') setCurrentUser(parsed);
+      }
+    } catch (err) {
+      console.warn('Error loading user:', err);
     }
-  })
+  }, []);
+
+  // Set browser tab title
+  useEffect(() => {
+    document.title = currentUser
+        ? `Welcome, ${currentUser.username}`
+        : 'Online Studying Platform';
+  }, [currentUser]);
 
   const signOut = () => {
     try {
-      localStorage.removeItem('current_user')
-    } catch (e) {}
-    setCurrentUser(null)
-    setShowLogin(false)
-    setShowSignup(false)
-    setShowHero(true)
-  }
-  const navigate = useNavigate();
+      localStorage.removeItem('current_user');
+    } catch (err) {
+      console.warn('Error clearing user:', err);
+    }
+    setCurrentUser(null);
+    setView('home');
+  };
+
+  const renderContent = () => {
+    if (currentUser) return <Notes />;
+
+    switch (view) {
+      case 'login':
+        return (
+            <Login
+                onLogin={(user) => {
+                  setCurrentUser(user);
+                  localStorage.setItem('current_user', JSON.stringify(user));
+                  setView('notes');
+                }}
+                onShowSignUp={() => setView('signup')}
+            />
+        );
+      case 'signup':
+        return (
+            <SignUp
+                onSignUp={(user) => {
+                  setCurrentUser(user);
+                  localStorage.setItem('current_user', JSON.stringify(user));
+                  setView('notes');
+                }}
+                onHome={() => setView('home')}
+            />
+        );
+      default:
+        return (
+            <div className="hero">
+              <p>
+                “Tired of struggling to keep your studies organized? With Online Studying
+                Platform, you can learn anytime, anywhere, and connect with tools that make
+                studying easier and more effective. Join thousands of learners already improving
+                their skills — sign up today and start your journey toward smarter studying!”
+              </p>
+              <button className="study-submit" onClick={() => setView('signup')}>
+                Get Started
+              </button>
+            </div>
+        );
+    }
+  };
 
   return (
-    <div className="app-root">
-      <header className={`app-header ${!showSignup ? 'centered' : ''}`}>
-        <div>
+      <div className="app-root">
+        <header className="app-header">
           <h1>Online Studying Platform</h1>
-
-          <h2>{showSignup ? 'Sign up' : 'Homepage'}</h2>
-          <p className="subtitle">{showSignup ? 'Create an account to get started' : <p1>'Welcome to our Online Studying Website'</p1>}</p>
+          <p className="subtitle">
+            {view === 'signup'
+                ? 'Create an account to get started'
+                : view === 'login'
+                    ? 'Welcome back — log in to continue learning'
+                    : 'Smarter studying starts here'}
+          </p>
 
           <div className="title-actions">
             {!currentUser && (
-              <button className="nav-button" onClick={() => { setShowSignup(false); setShowLogin(false); setShowHero(true) }}>Home</button>
+                <button className="nav-button" onClick={() => setView('home')}>
+                  Home
+                </button>
             )}
+
             {!currentUser ? (
-              <button className="nav-button" onClick={() => { setShowLogin(true); setShowSignup(false); setShowHero(false) }}>Log In</button>
+                <>
+                  <button className="nav-button" onClick={() => setView('login')}>
+                    Log In
+                  </button>
+                  <button className="nav-button secondary" onClick={() => setView('signup')}>
+                    Sign Up
+                  </button>
+                </>
             ) : (
-              <div style={{ display: 'inline-flex', gap: 8, alignItems: 'center' }}>
-                <span className="user-badge">Welcome, {currentUser.username}!</span>
-                <button className="nav-button" onClick={signOut}>Sign out</button>
-              </div>
+                <div className="user-section">
+                  <span className="user-badge">Welcome, {currentUser.username}!</span>
+                  <button className="nav-button" onClick={signOut}>
+                    Sign Out
+                  </button>
+                </div>
             )}
           </div>
-        </div>
+        </header>
 
-      </header>
+        <main className="card">{renderContent()}</main>
 
-      <section className="card">
-        {currentUser ? (
-          // If a user is signed in, show only Notes — no sign up sheet or prompt
-          <Notes />
-        ) : showLogin ? (
-          <Login onLogin={(user) => { setCurrentUser(user); setShowLogin(false); setShowSignup(false) }} onShowSignUp={() => { setShowSignup(true); setShowLogin(false) }} />
-        ) : showSignup ? (
-          <SignUp onSignUp={(user) => { setCurrentUser(user); setShowSignup(false) }} onHome={() => setShowSignup(false)} />
-        ) : (
-          <div className="hero">
-            <p>“Tired of struggling to keep your studies organized? With Online Studying Platform,
-               you can learn anytime, anywhere, and connect with tools that make studying easier 
-               and more effective. Join thousands of learners who are already improving their 
-               skills—sign up today and start your journey toward smarter studying!”</p>
-            <button className="study-submit" onClick={() => navigate("/signup")}>Get started</button>
-            <div style={{ marginTop: 16 }}>
-              {/* No prompt here unless you want one */}
-            </div>
-          </div>
-        )}
-      </section>
-    </div>
-  )
+        <footer className="app-footer">
+          <p>© {new Date().getFullYear()} Online Studying Platform. All rights reserved.</p>
+        </footer>
+      </div>
+  );
 }
 
-export default App
+export default App;
+
+
+

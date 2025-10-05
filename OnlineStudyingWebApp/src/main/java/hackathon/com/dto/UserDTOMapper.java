@@ -17,9 +17,9 @@ public class UserDTOMapper implements Function<User, UserDTO> {
                 user.getEmail(),
                 user.getPassword(),
                 user.getCreatedAt(),
-                user.getNotes(),
-                user.getQuizzes(),
-                user.getReports(),
+                user.getNotes().size(),
+                user.getQuizzes().size(),
+                user.getReports().size(),
                 user.getAuthorities().stream()
                         .map(GrantedAuthority::getAuthority)
                         .collect(Collectors.toList())

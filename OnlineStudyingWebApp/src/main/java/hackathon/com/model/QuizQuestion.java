@@ -1,14 +1,13 @@
 package hackathon.com.model;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.util.List;
 
 @Entity
-@Data
+@Getter
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 public class QuizQuestion {
@@ -16,18 +15,26 @@ public class QuizQuestion {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(nullable = false, columnDefinition = "TEXT")
     private String question;
 
     @ElementCollection
+    @CollectionTable(name = "question_options", joinColumns = @JoinColumn(name = "question_id"))
+    @Column(name = "option_text", columnDefinition = "TEXT")
+    @OrderColumn(name = "option_order")
     private List<String> options;
 
+    @Column
     private int selectedAnswerIndex;
 
+    @Column(nullable = false)
     private int correctAnswerIndex;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "quiz_id", nullable = false)
     private Quiz quiz;
 
-//    @OneToOne
-//    private FlashCard flashCard;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "source_flashcard_id")
+    private FlashCard flashCard;
 }

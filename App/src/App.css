@@ -1,194 +1,142 @@
-body::before {
-  content: "";
-  position: fixed;
-  inset: 0;                       /* top:0; right:0; bottom:0; left:0; */
-  background-image: url('images/background.jpg'); /* put the file in public/ */
-  background-size: cover;
-  background-position: center;
-  background-repeat: no-repeat;
-  filter: blur(10px) brightness(0.7); /* blur and dim the image */
-  transform: scale(1.03);         /* avoid visible edges after blur */
-  z-index: -1;                    /* put behind the app content */
-  pointer-events: none;
+:root {
+  --accent: #4f8cff;
+  --accent-hover: #2d6af3;
+  --bg: #f8f9fc;
+  --card: #ffffff;
+  --text: #1a1a1a;
+  --muted: #666;
+  --border: #e3e6ed;
+  --radius: 12px;
+  --shadow: 0 3px 10px rgba(0, 0, 0, 0.08);
 }
 
-#root {
-  max-width: 1280px;
-  margin: 0 auto;
-  padding: 2rem;
-  text-align: center;
+/* ---------- Global ---------- */
+body {
+  margin: 0;
+  background-color: var(--bg);
+  color: var(--text);
+  font-family: 'Inter', system-ui, sans-serif;
+  line-height: 1.6;
 }
 
-.logo {
-  height: 6em;
-  padding: 1.5em;
-  will-change: filter;
-  transition: filter 300ms;
-}
-.logo:hover {
-  filter: drop-shadow(0 0 2em #646cffaa);
-}
-.logo.react:hover {
-  filter: drop-shadow(0 0 2em #61dafbaa);
-}
-
-@keyframes logo-spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
-}
-
-@media (prefers-reduced-motion: no-preference) {
-  a:nth-of-type(2) .logo {
-    animation: logo-spin infinite 20s linear;
-  }
-}
-
-.card {
-  padding: 2em;
-}
-
-.read-the-docs {
-  color: #888;
-}
-
-/* Study app styles (was ToDo) */
 .app-root {
-  /* Increased max width so the app card can be wider on desktop */
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: 2rem;
-  text-align: center;
-  position: relative;
-  z-index: 0;
-}
-
-.app-header { display:flex; justify-content:space-between; align-items:center }
-.header-actions { display:flex; gap:0.5rem }
-.nav-button { padding:0.45rem 0.75rem; border-radius:6px; border:1px solid #e6e6ef; background:transparent; cursor:pointer }
-
-.title-actions { display:flex; gap:0.5rem; justify-content:center; margin-top:0.75rem }
-.title-actions .nav-button { background:#fff }
-
-.user-badge { background:#eef2ff; padding:0.25rem 0.5rem; border-radius:6px; color:#222 }
-
-/* centered header (home) */
-.app-header.centered { justify-content:center; text-align:center }
-.app-header.centered .header-actions { display:none }
-
-header h1 {
-  margin: 0 0 0.50rem 0;
-  color: white;
-  font-size: 2.5rem;
-  align-items: center;
-}
-p1{
-  margin: 0 0 1rem 0;
-  color: white;
-}
-
-h2{
-  margin: 0 0 1rem 0;
-  color: white;
-  font-size: 1.5rem;
-  align-items: center;}
-.subtitle {
-  margin: 0 0 1rem 0;
-  color: #666;
-}
-
-.card {
-  background: #fff;
-  border-radius: 10px;
-  box-shadow: 0 6px 20px rgba(20,20,50,0.06);
-  padding: 1rem 1.25rem;
   display: flex;
   flex-direction: column;
+  min-height: 100vh;
   align-items: center;
 }
 
-.controls {
-  display: flex;
-  gap: 0.5rem;
-  align-items: center;
-  justify-content: center;
-  margin-bottom: 0.75rem;
+/* ---------- Header ---------- */
+.app-header {
+  width: 100%;
+  background-color: var(--card);
+  border-bottom: 1px solid var(--border);
+  text-align: center;
+  padding: 2rem 1rem;
+  box-shadow: var(--shadow);
 }
 
-.study-form { display:flex; gap:0.5rem; flex:1 }
-.study-input {
-  flex:1;
-  padding: 0.5rem 0.75rem;
-  border-radius:6px;
-  border:1px solid #ddd;
+.app-header h1 {
+  color: var(--accent);
+  font-size: 2rem;
+  margin-bottom: 0.3rem;
 }
-.study-submit {
-  padding: 0.5rem 0.85rem;
-  border-radius:6px;
-  border: none;
-  background: #4f46e5;
+
+.subtitle {
+  color: var(--muted);
+  font-size: 1rem;
+  margin-bottom: 1rem;
+}
+
+/* ---------- Buttons ---------- */
+.nav-button {
+  background-color: var(--accent);
   color: #fff;
-  cursor:pointer;
-}
-.add-controls .clear-btn {
-  background: transparent;
-  border: 1px solid #eee;
-  padding: 0.5rem 0.75rem;
-  border-radius:6px;
-  cursor:pointer;
-}
-
-.study-list { list-style:none; padding:0; margin:0 }
-.study-item { display:flex; align-items:center; justify-content:space-between; padding:0.5rem 0; border-bottom:1px dashed #f0f0f0 }
-.study-text { color:#222 }
-.remove-btn { background:transparent; border:none; font-size:1.2rem; line-height:1; cursor:pointer; color:#e11d48 }
-.empty { color:#777; padding:0.5rem 0 }
-
-@media (max-width:480px){
-  .controls { flex-direction:column; align-items:stretch }
-  .study-form { width:100% }
+  border: none;
+  border-radius: var(--radius);
+  padding: 0.6rem 1.2rem;
+  cursor: pointer;
+  font-weight: 500;
+  transition: 0.25s ease;
+  box-shadow: 0 2px 5px rgba(79, 140, 255, 0.25);
 }
 
-/* Signup styles */
-.signup-form { display:flex; flex-direction:column; gap:0.75rem; align-items:center }
-.signup .field { display:flex; flex-direction:column; align-items:center }
-.signup label { font-size:0.9rem; color:#333; margin-bottom:0.25rem }
-.signup input { width:100%; max-width:420px; padding:0.5rem; border:1px solid #ddd; border-radius:6px }
-.field-error { color:#b91c1c; font-size:0.85rem; margin-top:0.25rem }
-.signup-success { margin-top:1rem; padding:0.75rem; background:#ecfdf5; border:1px solid #bbf7d0; border-radius:6px }
-
-.hero { display:flex; flex-direction:column; gap:0.75rem; align-items:center; text-align:center }
-
-.notes { width:100%; max-width:1100px }
-.notes-header { display:flex; justify-content:center; align-items:center; flex-direction:column }
-.notes-area { width:100%; max-width:1100px; padding:0.75rem; border-radius:8px; border:1px solid #e6e6f0; font-family:inherit }
-.notes-meta { color:#666; font-size:0.9rem }
-
-.notes-list { list-style:none; padding:0; margin:0 }
-.note-item { display:flex; align-items:flex-start; justify-content:space-between; padding:0.6rem 0; border-bottom:1px dashed #f0f0f0 }
-.note-body { max-width:80%; margin:0 auto; text-align:center }
-.note-title { font-weight:700; color:#111; margin-bottom:6px; text-align:left }
-.note-text { color:#111; text-align:left }
-.note-ts { color:#666; font-size:0.8rem }
-.note-empty { color:#777; padding:0.5rem 0 }
-
-/* center primary CTA inside the hero section */
-.hero .study-submit {
-  display: inline-block;
-  margin: 0 auto;
+.nav-button:hover {
+  background-color: var(--accent-hover);
 }
 
-/* keep default button behavior for other buttons */
+.nav-button.secondary {
+  background-color: transparent;
+  color: var(--accent);
+  border: 1px solid var(--accent);
+  box-shadow: none;
+}
 
-.notes-actions { display:flex; gap:12px; justify-content:space-between; align-items:center; width:100%; max-width:1100px }
-.import-label { display:inline-flex; align-items:center; gap:8px; cursor:pointer }
+.nav-button.secondary:hover {
+  background-color: rgba(79, 140, 255, 0.1);
+}
 
-/* Override: force all text to black across the app. This takes precedence over theme variables. */
-*, *::before, *::after { color: #000 !important; }
-::placeholder { color: #000 !important; opacity: 1 !important; }
+/* ---------- User Section ---------- */
+.user-section {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+}
 
-/* Also ensure SVG fills inherit black where possible */
-svg { fill: #000 !important; color: #000 !important; }
+.user-badge {
+  color: var(--text);
+  font-weight: 500;
+}
+
+/* ---------- Card ---------- */
+.card {
+  background-color: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  margin: 2rem;
+  padding: 2rem;
+  width: 90%;
+  max-width: 700px;
+  box-shadow: var(--shadow);
+}
+
+/* ---------- Hero ---------- */
+.hero {
+  text-align: center;
+}
+
+.hero p {
+  color: var(--muted);
+  font-size: 1rem;
+  line-height: 1.8;
+  margin-bottom: 1.5rem;
+}
+
+.study-submit {
+  background-color: var(--accent);
+  color: white;
+  border: none;
+  padding: 0.8rem 1.6rem;
+  border-radius: var(--radius);
+  font-size: 1.1rem;
+  cursor: pointer;
+  transition: 0.25s ease;
+  box-shadow: 0 3px 8px rgba(79, 140, 255, 0.25);
+}
+
+.study-submit:hover {
+  background-color: var(--accent-hover);
+  transform: scale(1.02);
+}
+
+/* ---------- Footer ---------- */
+.app-footer {
+  text-align: center;
+  padding: 1rem;
+  font-size: 0.9rem;
+  color: var(--muted);
+  border-top: 1px solid var(--border);
+  width: 100%;
+  margin-top: auto;
+  background-color: #fafbff;
+}

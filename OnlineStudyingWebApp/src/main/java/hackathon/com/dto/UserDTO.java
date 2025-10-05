@@ -12,9 +12,9 @@ public record UserDTO(
         String email,
         String password,
         LocalDateTime createdAt,
-        List<Note> noteList,
-        List<Quiz> quizzes,
-        List<Report> reports,
+        int noteCount,
+        int quizCount,
+        int reportCount,
         List<String> roles
 ) {
 }

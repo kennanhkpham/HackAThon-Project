@@ -3,6 +3,13 @@ server:
   error:
     include-message: always
 
+gemini:
+  api:
+    key: AIzaSyBN9tpx9_acS_D-1Vz9AffunRrE3p9x4gg
+    url: https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent
+    timeout: 60000
+
+
 cors:
   allowed-origins: "*"
   allowed-methods: "*"
@@ -17,7 +24,7 @@ spring:
     password: password
   jpa:
     hibernate:
-      ddl-auto: create-drop
+      ddl-auto: create
     properties:
       hibernate:
         format_sql: true

@@ -1,9 +1,8 @@
 package hackathon.com.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -13,7 +12,8 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-@Data
+@Getter
+@Setter
 @AllArgsConstructor
 @Entity
 @Table(name = "users")
@@ -32,12 +32,15 @@ public class User implements UserDetails {
     private LocalDateTime createdAt;
 
     @OneToMany(mappedBy = "user")
+    @JsonIgnore
     private List<Note> notes;
 
     @OneToMany(mappedBy = "user")
+    @JsonIgnore
     private List<Quiz> quizzes;
 
     @OneToMany(mappedBy = "user")
+    @JsonIgnore
     private List<Report> reports;
 
     @OneToOne(cascade = CascadeType.ALL)
@@ -90,33 +93,5 @@ public class User implements UserDetails {
     @Override
     public boolean isEnabled() {
         return true;
-    }
-
-    public Long getId() {
-        return id;
-    }
-
-    public String getEmail() {
-        return email;
-    }
-
-    public LocalDateTime getCreatedAt() {
-        return createdAt;
-    }
-
-    public List<Note> getNotes() {
-        return notes;
-    }
-
-    public List<Quiz> getQuizzes() {
-        return quizzes;
-    }
-
-    public List<Report> getReports() {
-        return reports;
-    }
-
-    public StudyGuide getStudyGuide() {
-        return studyGuide;
     }
 }

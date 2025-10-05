@@ -10,16 +10,12 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+@RequiredArgsConstructor
 @RestController
 @RequestMapping("/api/v1/user")
 public class UserController {
     private final UserService userService;
     private final JWTUtil jwtUtil;
-
-    public UserController(UserService userService, JWTUtil jwtUtil) {
-        this.userService = userService;
-        this.jwtUtil = jwtUtil;
-    }
 
     @PostMapping()
     public ResponseEntity<?> addUser(@RequestBody UserRegistrationRequest userRegistrationRequest) {

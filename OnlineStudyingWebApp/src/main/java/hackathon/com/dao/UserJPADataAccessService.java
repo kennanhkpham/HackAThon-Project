@@ -8,13 +8,10 @@ import org.springframework.stereotype.Repository;
 import java.util.Optional;
 
 
+@RequiredArgsConstructor
 @Repository
 public class UserJPADataAccessService {
     private final UserRepository userRepository;
-
-    public UserJPADataAccessService(UserRepository userRepository) {
-        this.userRepository = userRepository;
-    }
 
     public void addUser(User user) {
         userRepository.save(user);
