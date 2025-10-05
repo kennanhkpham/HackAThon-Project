@@ -12,7 +12,7 @@ import java.util.List;
 @Entity
 @Data
 @AllArgsConstructor
-@NoArgsConstructor
+
 public class Report {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
