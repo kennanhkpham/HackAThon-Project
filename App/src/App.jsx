@@ -3,6 +3,7 @@ import './App.css'
 import SignUp from './components/SignUp'
 import Notes from './components/Notes'
 import Login from './components/Login'
+import axios from 'axios'
 
 function App() {
   const [showSignup, setShowSignup] = useState(false)
@@ -34,7 +35,7 @@ function App() {
           <h1>Online Studying Platform</h1>
 
           <h2>{showSignup ? 'Sign up' : 'Homepage'}</h2>
-          <p className="subtitle">{showSignup ? 'Create an account to get started' : 'Welcome to our Online Studying Website'}</p>
+          <p className="subtitle">{showSignup ? 'Create an account to get started' : <p1>'Welcome to our Online Studying Website'</p1>}</p>
 
           <div className="title-actions">
             {!currentUser && (
@@ -44,7 +45,7 @@ function App() {
               <button className="nav-button" onClick={() => { setShowLogin(true); setShowSignup(false); setShowHero(false) }}>Log In</button>
             ) : (
               <div style={{ display: 'inline-flex', gap: 8, alignItems: 'center' }}>
-                <span className="user-badge">{currentUser.username}</span>
+                <span className="user-badge">Welcome, {currentUser.username}!</span>
                 <button className="nav-button" onClick={signOut}>Sign out</button>
               </div>
             )}
