@@ -3,7 +3,6 @@ import './App.css'
 import SignUp from './components/SignUp'
 import Notes from './components/Notes'
 import Login from './components/Login'
-import axios from 'axios'
 import {useNavigate} from "react-router-dom";
 
 function App() {

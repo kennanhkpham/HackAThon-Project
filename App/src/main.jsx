@@ -6,6 +6,7 @@ import App from './App.jsx'
 import { createBrowserRouter, RouterProvider } from "react-router-dom"
 import SignUp from "./components/SignUp.jsx";
 import AuthProvider from "./components/auth/AuthContext.jsx";
+import Dashboard from "./components/Dashboard.jsx";
 
 const router =createBrowserRouter([
     {
@@ -14,7 +15,7 @@ const router =createBrowserRouter([
     },
     {
         path: "/dashboard",
-        element: <h1>ABC</h1>
+        element: <Dashboard/>
 
     },
     {
