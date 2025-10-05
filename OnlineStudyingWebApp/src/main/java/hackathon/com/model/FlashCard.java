@@ -10,6 +10,11 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @Data
 public class FlashCard {
+    public FlashCard(String term, String definition) {
+        this.term = term;
+        this.definition = definition;
+    }
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
