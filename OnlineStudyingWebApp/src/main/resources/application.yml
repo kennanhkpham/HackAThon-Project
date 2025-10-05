@@ -6,7 +6,7 @@ server:
 spring:
   datasource:
     driver-class-name: org.postgresql.Driver
-    url: jdbc:postgresql://localhost:5432/booking
+    url: jdbc:postgresql://localhost:5432/study
     username: ltt4456
     password: password
   jpa:
@@ -15,11 +15,7 @@ spring:
     properties:
       hibernate:
         format_sql: true
-    show-sql: true
+    show-sql: false
     open-in-view: false
   main:
     web-application-type: servlet
-logging:
-  level:
-    org.flywaydb: DEBUG
-    org.springframework.boot.autoconfigure.flyway: DEBUG

@@ -7,6 +7,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -28,13 +29,18 @@ public class Note {
     @ManyToOne
     private User user;
 
-    @OneToMany
+    @OneToMany(mappedBy = "note", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<FlashCard> flashCardList;
 
-    @OneToMany
+    @OneToMany(mappedBy = "note", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Quiz> quizzes;
 
-    @OneToMany
+    @OneToMany(mappedBy = "note", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Topic> topics;
 
+    public Note(){
+        flashCardList = new ArrayList<>();
+        quizzes = new ArrayList<>();
+        topics = new ArrayList<>();
+    }
 }

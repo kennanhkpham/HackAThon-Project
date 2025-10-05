@@ -6,6 +6,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -34,4 +35,9 @@ public class Report {
 
     @OneToOne
     private Quiz quiz;
+
+    public Report(){
+        weakTopics = new ArrayList<>();
+        strongTopics = new ArrayList<>();
+    }
 }

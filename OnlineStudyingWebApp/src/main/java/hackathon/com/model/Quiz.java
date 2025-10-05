@@ -7,6 +7,7 @@ import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -27,14 +28,15 @@ public class Quiz {
     @ManyToOne
     private User user;
 
-    @OneToOne
+    @ManyToOne
     private Note note;
 
-    @OneToMany
+    @OneToMany(mappedBy = "quiz", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<QuizQuestion> quizQuestions;
 
-    @OneToMany
-    private List<Topic> topics;
+    public Quiz(){
+        quizQuestions = new ArrayList<>();
+    }
 
 
 }

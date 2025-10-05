@@ -1,6 +1,6 @@
 services:
   db:
-    container_name: postgres
+    container_name: OnlineStudying
     image: postgres:17.6
     environment:
       POSTGRES_USER: ltt4456
