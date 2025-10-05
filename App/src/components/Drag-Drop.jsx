@@ -72,9 +72,14 @@ export default function DragDrop({ onGenerated, onClose }) {
     const fd = new FormData()
     files.forEach((f, i) => fd.append('files', f.file, f.file.name))
 
+    // *** MODIFICATION START ***
+    // Explicitly call the API on port 8080 (standard for Spring Boot)
+    const apiUrl = 'http://localhost:5332/api/v1/note/upload'; 
+    // *** MODIFICATION END ***
+
     try {
-      // Try to call a server-side summarization endpoint. Replace the URL with your server.
-      const res = await fetch('/api/summarize', { method: 'POST', body: fd })
+      // Try to call a server-side summarization endpoint.
+      const res = await fetch(apiUrl, { method: 'POST', body: fd }) // Use the new apiUrl
       if (!res.ok) throw new Error(`Server responded ${res.status}`)
       const data = await res.json()
       if (data && data.summary) {
@@ -88,6 +93,7 @@ export default function DragDrop({ onGenerated, onClose }) {
       // Server not available or failed. Fall back to client-side mock summary.
       console.warn('Summarization endpoint call failed, falling back to mock. Error:', err)
       try {
+        // Mock summary function now returns a cleaner result
         const mock = await mockSummary(files)
         setSummary(mock)
         setStatus('done')
@@ -98,20 +104,22 @@ export default function DragDrop({ onGenerated, onClose }) {
     }
   }
 
-  // Very small client-side fallback summary: for .txt files we read content; for others we create a short metadata preview.
   async function mockSummary(filesArr) {
-    const parts = []
+    const parts = ['(MOCK SUMMARY) File Previews:']
     for (const entry of filesArr) {
       const f = entry.file
       const lower = f.name.toLowerCase()
       if (lower.endsWith('.txt')) {
         const txt = await f.text()
-        parts.push(`File: ${f.name}\nPreview: ${txt.slice(0, 300).replace(/\s+/g, ' ')}${txt.length > 300 ? '…' : ''}\n`)
+        // Use a short, formatted preview
+        parts.push(`- ${f.name}\n  Content: ${txt.slice(0, 200).replace(/\s+/g, ' ')}${txt.length > 200 ? '…' : ''}`)
       } else {
-        parts.push(`File: ${f.name} — type: ${f.type || 'binary'} — size: ${Math.round(f.size/1024)}KB\n`) 
+        // Use metadata preview for binary files
+        parts.push(`- ${f.name} (Binary file) — size: ${Math.round(f.size/1024)}KB`) 
       }
     }
-    parts.push('\nMock AI Overview:\nThis is a fallback summary because no server-side AI endpoint was reachable. To enable real AI summaries, create a server endpoint (POST /api/summarize) that accepts file uploads, extracts text from PDF/DOCX/PPTX (using libraries like pdfjs, mammoth, or libreoffice/pandoc on the server), then call your AI provider with the extracted text and return the generated summary here.')
+    // Append a brief, user-friendly mock indicator, not the long developer note
+    parts.push('\nNote: This is a client-side preview. A real summary requires a server-side AI endpoint.')
     return parts.join('\n')
   }
 
